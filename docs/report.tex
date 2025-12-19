@@ -1,13 +1,13 @@
 \documentclass{article}
-\usepackage[utf8]{inputenc} % encodage
+\usepackage[utf8]{inputenc} 
 \usepackage[a4paper, margin=2.5cm]{geometry}
-\usepackage{graphicx}       % images
-\usepackage{hyperref}       % liens cliquables dans la ToC
+\usepackage{graphicx}      
+\usepackage{hyperref}       
 \usepackage{booktabs}
-\usepackage{amsmath} % Pour les environnements mathématiques
-\usepackage{array}   % Pour une meilleure gestion des tableaux
+\usepackage{amsmath} 
+\usepackage{array}   
 \usepackage{adjustbox}
-\usepackage{cite}  % pour gérer correctement les citations numériques
+\usepackage{cite} 
 \usepackage{float}
 
 
@@ -71,9 +71,7 @@ To compute the snow melt rate, it is necessary to establish an energy balance in
 
 For our model, we decided to neglect the ground heat flux ($G$) in order to simplify the calculations. According to \textit{Modelling surface temperature and radiation budget of snow-covered complex terrain} \cite{robledano2022modelling}, neglecting $G$ in a snow energy balance does not lead to a significant discrepancy with real measurements. The different names given to each variable were taken from \textit{Assessing the controls of the snow energy balance and water available for runoff in a rain-on-snow environment}\cite{mazurkiewicz2008assessing}, while the exact calculations for each variable and the choice of the variables taken into account were made following \textit{Modelling surface temperature and radiation budget of snow-covered complex terrain} \cite{robledano2022modelling}. This results in the final energy balance used for the model (Eq. 1).
 
- 
-%on a utilisé \cite{mazurkiewicz2008assessing} pour les noms des variables
-%mais on a utilisé \cite{fernandez1998energy} pour le bilan radiatif total + chaque variable précise (pas oublier de rajouter snow avected heat (t'as capté).
+
 
 \begin{equation}
     Q_m = R_n + L_n + H + LE + M +Sn
@@ -98,7 +96,6 @@ Some parameters were not well defined or required additional data and measuremen
 
 The formulas used for each term of the energy balance are presented below: 
 
-%\cite{fernandez1998energy} : chaque formule précise du snow energy balance
 \begin{equation}
     z = \frac{T_0}{\Delta T} \left[ \left( \frac{P_\text{surface}}{P_\text{msl}} \right)^{-\frac{R \, \Delta T}{M_\text{air} \, g}} - 1 \right]
 \end{equation}
@@ -193,13 +190,6 @@ As regards the data used in our project model, the main and only database employ
 
 The energy balance was evaluated at each grid point and time step, and melt rates were computed whenever the net available energy exceeded zero.
 
-%\cite{robledano2022modelling} : pourquoi on néglige le ground heat flux G
-
-%\cite{openmeteo_historical_forecast_api} : API pour récolter les données météo pour nos points
-
-%\cite{wiki_masse_volumique_air} : masse volumique de l'air
-
-%\cite{he2018blackcarbon} : estimation de valeur de albedo polluted 
 
 
 \section{Results}
@@ -268,5 +258,4 @@ During the project, tasks were equitably distributed among the team members to e
 
 
 
-%parler des chiffres obtenue dans les resultats 
 
