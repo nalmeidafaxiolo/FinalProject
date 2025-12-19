@@ -43,8 +43,6 @@ Data filtering and visualization are performed using MATLAB (version ≥ R2021a)
 
 ### Build
 
-Describe how the C program should be compiled (using gcc or mex). The executable or shared object file can be placed in the "bin/" directory.
-
 The snow energy balance model is implemented in C [snow_energy_balance.c](src/snow_energy_balance.c). To compile it, use the GNU Compiler Collection (gcc) from the root of the project (`Project-CMT`):
 
 ```bash
@@ -52,8 +50,6 @@ gcc src/snow_energy_balance.c -o bin/snow_energy_balance.out -lm
 ```
 
 ### Execute
-
-Describe how the program should be executed. Ideally, it will be automated to one line of code in a terminal running Bash (e.g., `matlab -batch src/myscript`), with the outputs generated to "results/".
 
 The complete workflow, including compilation of the C program, computation of snow melt, and plotting of results, is automated in the MATLAB script [plot_results.m](src/plot_results.m).
 
