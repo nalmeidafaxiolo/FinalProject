@@ -1,0 +1,272 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc} % encodage
+\usepackage[a4paper, margin=2.5cm]{geometry}
+\usepackage{graphicx}       % images
+\usepackage{hyperref}       % liens cliquables dans la ToC
+\usepackage{booktabs}
+\usepackage{amsmath} % Pour les environnements mathématiques
+\usepackage{array}   % Pour une meilleure gestion des tableaux
+\usepackage{adjustbox}
+\usepackage{cite}  % pour gérer correctement les citations numériques
+\usepackage{float}
+
+
+\begin{document}
+
+% Première page personnalisée
+\begin{titlepage}
+    \centering
+    % Logo EPFL
+    \vspace*{2cm}
+    \includegraphics[width=0.3\textwidth]{LogoEPFL.png} % Remplacez "epfl_logo.png" par le chemin correct
+    \vspace{2cm}
+
+    % Titre
+    {\Huge \textbf{CMT Final Report} \par}
+    \vspace{1.5cm}
+
+    % Auteurs
+    {\Large Nelson Almeida Faxiolo \\ Adrien Mathieu \par}
+    
+    \vspace{1.5cm}
+    % Image de montagne
+    \begin{center}
+        \includegraphics[width=0.7\textwidth]{MontBlanc.png}
+    \end{center}
+
+    \vfill
+
+    % Date
+    {\large December 2025\par}
+\end{titlepage}
+
+
+
+\section{Deviation from project proposal}
+
+In the project proposal, we initially aimed to focus more directly on the impact of black carbon concentration on snow albedo by physically modeling the link between concentration and albedo reduction in the code. During the project, we concluded that modeling the physics behind the albedo reduction was very time-demanding and physically complex. We concluded that the equations provided in the main source we found on this topic \cite{dang2015parameterizations} were ultimately too complex to implement. The paper proposes a very accurate model with multiple equations for narrowband and broadband albedo reduction, but it includes too many steps to simply calculate this effect within the scope of our project, which is a simplified representation of reality.
+
+Instead, we therefore decided to use empirical measurements of snow albedo reduction due to black carbon found in \textit{Black carbon-induced snow albedo reduction over the Tibetan Plateau: uncertainties from snow grain shape and aerosol–snow mixing state based on an updated SNICAR model} \cite{he2018blackcarbon}.
+Another important aspect mentioned in the project proposal from which we deviated is that of the modeled mountain. In the project proposal, we stated that we would model a mountain slope with different micro-environments to better observe the effects of black carbon on snow melt. We concluded that it would be more interesting to model a real mountain (in our case, Mont Blanc) in order to study the effects of this phenomenon. This change had multiple advantages. First, it enabled us to model more realistic environmental conditions rather than a simplified, idealized mountain slope. Second, by choosing a real mountain, we were able to use real data and measurements, which greatly improved both the precision and the relevance of the model.
+
+The energy balance presented in the project proposal was also slightly modified by introducing the advected heat from snow precipitation and neglecting the ground heat flux. This decision was made on the basis of the following paper \cite{robledano2022modelling}. This led us to use the thermal balance described in \cite{fernandez1998energy}. Modeling the advected heat from snow precipitation was made possible by the decision to use real data, which provided crucial information regarding snow precipitation rates and other physical measurements necessary to quantify this contribution, as well as the other energy fluxes.
+
+Regarding the other goals set in the project proposal, these were not changed and were largely achieved.
+
+
+\section{Introduction to the problem}
+
+Black carbon is a light-absorbing aerosol that significantly alters the radiative properties of snow-covered surfaces. When deposited on snow, it reduces surface albedo, leading to enhanced absorption of incoming shortwave radiation and consequently accelerating snow melt. This mechanism represents a well-known positive feedback in the cryosphere–climate system, with particularly strong impacts in high-altitude and high-latitude environments.
+
+Mountain snowpacks play a critical role in regional hydrology by acting as temporary freshwater reservoirs. Variations in snow melt rates directly affect river discharge, water availability, hydroelectric power production, and ecosystem dynamics. In mountainous regions such as the Alps, changes in snow melt dynamics are therefore of both environmental and societal importance. Quantifying the contribution of black carbon to snow melt remains essential for understanding its role relative to other atmospheric and surface processes.
+
+From a modeling perspective, snow melt can be described through an energy balance approach that accounts for radiative and turbulent fluxes, as well as advective heat contributions. While physically detailed models linking black carbon concentration to albedo reduction exist, their complexity often limits their applicability in simplified numerical frameworks or educational projects. As a result, empirical parameterizations of albedo reduction provide a practical alternative for investigating the influence of black carbon on snow melt under realistic meteorological conditions.
+
+In this project, we model snow melt over Mont Blanc using a physically based energy balance model driven by real meteorological data. The impact of black carbon is introduced through empirically derived albedo reductions, allowing a direct comparison between clean and polluted snow scenarios. Melt rates and cumulative melt quantities are computed and analyzed in order to assess the spatial and temporal variability of black carbon-induced snow melt and to identify the conditions under which its effect is most pronounced.
+
+
+\section{Approach used (e.g., models, mathematical relationships)}
+
+To compute the snow melt rate, it is necessary to establish an energy balance in order to determine the excess energy that enables snow melting. We used a classical snow energy balance according to \textit{An energy balance model of seasonal snow evolution} \cite{fernandez1998energy}. This energy balance takes into account the main incoming and outgoing energy sources as well as the dominant fluxes. It is a slightly modified energy balance that can also be found in other works on this topic, such as \textit{Assessing the controls of the snow energy balance and water available for runoff in a rain-on-snow environment} \cite{mazurkiewicz2008assessing}, which includes the ground heat flux ($G$) but neglects the advected heat from snow precipitation ($Sn$).
+
+For our model, we decided to neglect the ground heat flux ($G$) in order to simplify the calculations. According to \textit{Modelling surface temperature and radiation budget of snow-covered complex terrain} \cite{robledano2022modelling}, neglecting $G$ in a snow energy balance does not lead to a significant discrepancy with real measurements. The different names given to each variable were taken from \textit{Assessing the controls of the snow energy balance and water available for runoff in a rain-on-snow environment}\cite{mazurkiewicz2008assessing}, while the exact calculations for each variable and the choice of the variables taken into account were made following \textit{Modelling surface temperature and radiation budget of snow-covered complex terrain} \cite{robledano2022modelling}. This results in the final energy balance used for the model (Eq. 1).
+
+ 
+%on a utilisé \cite{mazurkiewicz2008assessing} pour les noms des variables
+%mais on a utilisé \cite{fernandez1998energy} pour le bilan radiatif total + chaque variable précise (pas oublier de rajouter snow avected heat (t'as capté).
+
+\begin{equation}
+    Q_m = R_n + L_n + H + LE + M +Sn
+\end{equation}
+
+where :
+
+\begin{itemize}
+    \item $Q_m$ : amount of energy contributing towards snowmelt
+    \item $R_n$ : net shortwave radiation,
+    \item $L_n$ : net longwave radiation,
+    \item $H$ : sensible heat exchange,
+    \item $LE$ : latent heat of evaporation,
+    \item $G$ : ground heat flux, (The ground heat flux $G$ is defined for completeness but neglected in the present model.)
+    \item $M$ : advected heat from precipitation
+    \item $Sn$ : advected heat from snow precipitation
+\end{itemize}
+
+
+Some parameters were not well defined or required additional data and measurements that were not provided in the Open-Meteo database \cite{openmeteo_historical_forecast_api}. Therefore, complementary sources were used. Incoming longwave radiation, which was not provided by Open-Meteo\cite{openmeteo_historical_forecast_api}, was calculated according to \textit{A set of equations for full spectrum and 8- to 14-$\mu$m and 10.5- to 12.5-$\mu$m thermal radiation from cloudless skies} \cite{idso1981thermal}, using empirically determined coefficients for the atmospheric emissivity ($\epsilon_a$). Net longwave radiation was defined according to \textit{Modelling surface temperature and radiation budget of snow-covered complex terrain} \cite{robledano2022modelling}. Saturation vapor pressure ($e_s$) and actual vapor pressure ($e_a$) were calculated according to the following paper \cite{sciencedirect_vapor_pressure}. The dimensionless coefficients $c_h$ and $c_e$ were chosen according to \textit{Testing above- and below-canopy representations of turbulent fluxes in an energy balance snowmelt model} \cite{https://doi.org/10.1002/wrcr.20073}, using standard values reported in the literature. This choice was motivated by the fact that the coefficients defined in \cite{fernandez1998energy} led to melt rates that appeared strongly overestimated. When compared with other values found in the literature, these coefficients were approximately one order of magnitude larger. Since the Open-Meteo database provides only longitude and latitude values and no direct altitude information, the altitude was computed following \cite{vertical_pressure_variation_wikipedia} using the International Standard Atmosphere (ICAO/ISA) barometric formula with a linear temperature lapse rate $\Delta T$. The density of air was calculated according to \cite{density_of_air_wikipedia}. 
+
+
+The formulas used for each term of the energy balance are presented below: 
+
+%\cite{fernandez1998energy} : chaque formule précise du snow energy balance
+\begin{equation}
+    z = \frac{T_0}{\Delta T} \left[ \left( \frac{P_\text{surface}}{P_\text{msl}} \right)^{-\frac{R \, \Delta T}{M_\text{air} \, g}} - 1 \right]
+\end{equation}
+\begin{equation}
+    T_0 = T_\text{a} + 273.15
+\end{equation}
+
+\begin{equation}
+    R_n = Q_{si} \cdot (1-\alpha_s)
+\end{equation}
+\begin{equation}
+    H = c_h \cdot \upsilon \cdot \rho_a \cdot c_p \cdot (T_a - T_s)
+\end{equation}
+\begin{equation}
+    LE = L_{\frac{s}{\upsilon}} \cdot M_e
+\end{equation}
+\begin{equation}
+    M_e = c_e \cdot \upsilon \cdot \frac{e_a -e_s(T_s)}{R_v \cdot T_a}
+\end{equation}
+
+\begin{equation}
+    M = P_r \cdot \rho_w \cdot c_w \cdot (T_r - T_s)
+\end{equation}    
+
+\begin{equation}
+    \rho_a = \frac{P100 - e_a\cdot1000}{R_s \cdot T_k} + \frac{e_a\cdot1000}{R_v \cdot T_k}
+\end{equation}
+
+
+\cite{idso1981thermal}
+\begin{equation}
+    L_i = (0,7 + 0,005T_a[°C])\cdot \sigma\cdot T_a^{4}[K]
+\end{equation}
+
+\cite{robledano2022modelling} :
+\begin{equation}
+    L_o = \epsilon_s \cdot \sigma \cdot T_s^{4}
+\end{equation}
+\begin{equation}
+    L_n = L_i - L_o
+\end{equation}
+
+
+\cite{sciencedirect_vapor_pressure}
+\begin{equation}
+    e_s = 611 exp(\frac{17,27T}{T + 273,3})
+\end{equation}
+
+\begin{equation}
+    e_a = RH \cdot e_s(T_a)
+\end{equation}
+
+
+
+\begin{table}[H]
+\centering
+\caption{Parameters and variables used in the radiative and energetic of snow}
+\begin{tabular}{lll}
+\toprule
+\textbf{Symbol} & \textbf{Description} & \textbf{Values / Units} \\
+\midrule
+$Q_{si}$       & Incoming shortwave radiation that is directly measured & W\,m$^{-2}$ \\
+$\alpha_s$     & Snow albedo & dimensionless \\
+$\epsilon_s$   & Snow emissivity & 1 (dimensionless) \\
+$\sigma$       & Stefan-Boltzmann constant & $5.67 \times 10^{-8}$ W\,m$^{-2}$\,K$^{-4}$ \\
+$T_s$          & Surface snow temperature & K \\
+$c_h, c_e$     & Dimensionless coefficients & 0.003 \\
+$\upsilon$     & 10 m wind speed & m\,s$^{-1}$ \\
+$\rho_a$       & Air density & kg\,m$^{-3}$ \\
+$c_p$          & Air specific heat capacity & 1005 J\,kg$^{-1}$\,K$^{-1}$ \\
+$T_a$          & Air temperature & K \\
+$R_v$          & Water vapor constant & J\,kg$^{-1}$\,K$^{-1}$ \\
+$RH$           & Relative humidity & as a fraction\\
+$P_r$          & Rain intensity & m\,s$^{-1}$ \\
+$\rho_w$       & Water density & kg\,m$^{-3}$ \\
+$c_w$          & Specific heat of water & 4186 J\,kg$^{-1}$\,K$^{-1}$ \\
+$T_r$          & Rain temperature parameterized as $T_r = \max(T_a, T_0)$ & K \\
+$\Delta$T      & Lapse rate & 0.0065 K\,m$^{-1}$\\
+$L_{\frac{s}{\upsilon}}$ & Latent heat of sublimation & 2.834*10${-6}$ J\,kg$^{-1}$\\
+
+\bottomrule
+\end{tabular}
+\label{tab:parameters_snow}
+\end{table}
+
+Table 1 \ref{tab:parameters_snow} summarizes the parameters and variables used in the radiative and energetic calculations of the snow energy balance.
+
+The albedo used for the polluted snow was taken from measurements obtained in \cite{he2018blackcarbon} with a value of $\alpha_p$ = 0.7 for polluted snow and $\alpha_p$ =0.85 for pure snow. 
+
+
+As regards the data used in our project model, the main and only database employed was Open-Meteo \cite{openmeteo_historical_forecast_api}. We extracted the required variables for a one-week period from May 1st, 2025 at 05:00 to May 7th, 2025 at 18:00. For each day, only daylight hours were processed, while nighttime hours without solar radiation were removed. This choice is based on the fact that black carbon pollution mainly affects snow albedo, which only plays a role in melting when solar irradiation is present. This choice allows isolating the effect of albedo-related processes rather than representing the full diurnal melt cycle. In total, data were collected for 91 hours using the Open-Meteo API provided by Open-Meteo.com \cite{openmeteo_historical_forecast_api} (i.e. preprocessing file on GitHub). The following variables were extracted and simulated temporally: latitude, longitude, time, air temperature at 2 meters above ground, relative humidity at 2 meters above ground, pressure at mean sea level, surface pressure, wind speed at 10 meters above ground, shortwave radiation, rain, snowfall, and snow depth.
+
+The energy balance was evaluated at each grid point and time step, and melt rates were computed whenever the net available energy exceeded zero.
+
+%\cite{robledano2022modelling} : pourquoi on néglige le ground heat flux G
+
+%\cite{openmeteo_historical_forecast_api} : API pour récolter les données météo pour nos points
+
+%\cite{wiki_masse_volumique_air} : masse volumique de l'air
+
+%\cite{he2018blackcarbon} : estimation de valeur de albedo polluted 
+
+
+\section{Results}
+
+All final thermodynamic values are provided in the computed data grid available in the /results directory on GitHub.
+
+The weekly simulation showed a significant affect of the pollution on the melt rate. Looking at ~\ref{Figure 1} a clear melt rate difference is visible, e.g.: at the bottom of the valley a difference of up to 1 to 2 mm/h can be observed. This higher melt rate is not only found at the bottom of the valley but roughly everywhere on the mountain. 
+
+During the late evening, the differences in the 3D snow melt models become less pronounced, with only minor visual variations between the polluted and unpolluted cases (Figure~\ref{Figure 2}). This indicates that the effect of black carbon is most significant during periods of strong solar irradiation.
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=1\textwidth]{Motagne14h.png}
+\caption{Pure and polluted snow melt the 02.05.2025 at 2 PM}
+\label{Figure 1} 
+\end{figure}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=1\textwidth]{Motagne18h.png}
+\caption{Pure and polluted snow melt the 03.05.2025 at 6 PM}
+\label{Figure 2} 
+\end{figure}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=1\textwidth]{courbes.png}
+\caption{Mean melt rates over the week}
+\label{Figure 3}
+\end{figure}
+
+By comparing the hypothetical melt rates of the snow layer, polluted snow melts approximately 54.4\% faster than unpolluted snow. This accelerated melting could correspond to a difference in water supply of up to 9,567 Olympic swimming pools.
+The melt rate curves (Figure~\ref{Figure 3}) further illustrate this pattern. The largest differences consistently occur around midday, corresponding to the peak solar radiation. The difference between polluted and pure snow melt rates shows relatively little variation from day to day, even when the overall melt rate is lower on certain days. This suggests that the impact of black carbon is primarily driven by instantaneous solar energy, rather than by longer-term variations in weather conditions during the week.
+
+As expected, the largest effect of black carbon on melt rate occurs during peak solar radiation, since the model modifies only snow albedo. The results therefore mainly serve to quantify and visualize this effect rather than reveal new physical insights.
+
+In summary, the results highlight that black carbon significantly accelerates snow melt during periods of high solar irradiance, with the effect being most pronounced around midday and early afternoon, and less visible in the evening or under lower solar radiation. Consequently, the removal of black carbon from the snow surface could substantially slow down the melting process.
+
+\section{Conclusion and outlook}
+
+In summary, black carbon pollution has a significant impact on snow melt, notably accelerating the process across the mountain. The effect is most pronounced during periods of high solar radiation, particularly around midday when incoming shortwave radiation is strongest. The simulations show that the presence of black carbon consistently increases melt rates compared to pure snow, with differences observable across the entire mountain surface. While the absolute magnitude of the effect varies with altitude and local conditions, the overall trend clearly demonstrates that black carbon plays a significant role in enhancing snow melt in this region.
+
+
+Even though the expected results were achieved, several limitations should be acknowledged. Snow temperature was approximated linearly, using fixed minimum and maximum values at the bottom and top altitudes to create a linear gradient. These temperatures are constant in time and represent a significant simplification that could be refined for more accurate predictions. The data required to determine the snow temperature were inaccessible, which therefore led to this approximation. Some aspects of the energy balance also contain approximations: for instance, the ground heat flux ($G$) was neglected, and certain terms required snow temperatures that were not available and therefore had to be estimated.
+The simulated black carbon distribution was assumed homogeneous, whereas in reality it would vary due to wind, melting patterns, snow age, and other factors. This simplification was made to isolate the effect of black carbon on melt, but it may bias the results. The melt rate calculated is a hypothetical speed and does not necessarily reflect the actual snow layer reduction, as the real snow thickness was not considered, potentially leading to an overestimation. Snow aging and compaction, which both reduce albedo over time, were not modeled. Moreover, the snow density used corresponds to water, not snow, because modeling the actual snow density would require accounting for age and compaction, adding substantial complexity. Therefore, the accuracy of the melt rate could not be clearly verified against the actual reduction of the snow layer. In addition, snow aging and compaction tend to reduce snow albedo over time, a process that was not modeled in this study.
+Finally, the resolution of the input data (400 m × 400 m grid cells) averages out local variations, which reduces spatial precision. Higher-resolution data would require more computational power but could provide more detailed results; for the purpose of this study, the current resolution was sufficient to capture the overall effect of black carbon on snow melt.
+
+
+
+\section{Authorship statement (contributions of each student on the team to the project)}
+
+During the project, tasks were equitably distributed among the team members to efficiently progress from project definition to data analysis and report writing.
+\begin{itemize}
+    \item Week  1 : The team redefined and refined the project scope, dedicating time to discuss objectives and methodology.
+    \item Week 2 :Nelson focused on sourcing the necessary meteorological data and creating the data tables. Adrien started implementing the energy balance in C, writing the functions corresponding to the snow energy fluxes.
+    \item Week 3 : The team faced challenges in finding snow temperature data and a function to relate snow albedo to black carbon concentration. Progress was made on the main C code, including the creation of data structures.
+    \item Week 4 : Work shifted to MATLAB, where plotting routines for the mountain topography and graphical outputs were developed.
+    \item Week 5-6 : The final weeks were dedicated to refining the simulations, completing figures, writing the project report, and managing the project repository on GitHub.
+\end{itemize}
+
+
+
+\bibliographystyle{plain}   % style de citation (plain, unsrt, alpha, etc.)
+\bibliography{bibliographie}  % le nom de ton fichier .bib sans extension
+\end{document}
+
+
+
+%parler des chiffres obtenue dans les resultats 
+
